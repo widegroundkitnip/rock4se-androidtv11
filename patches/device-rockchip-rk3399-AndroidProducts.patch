@@ -1,0 +1,20 @@
+diff --git a/AndroidProducts.mk b/AndroidProducts.mk
+index 40068ce..65c92ef 100755
+--- a/AndroidProducts.mk
++++ b/AndroidProducts.mk
+@@ -20,6 +20,7 @@ PRODUCT_MAKEFILES := \
+     $(LOCAL_DIR)/rk3399_Android10/rk3399_Android10.mk \
+     $(LOCAL_DIR)/rk3399_Android11/rk3399_Android11.mk \
+     $(LOCAL_DIR)/rk3399_ROCKPI4B_Android11/rk3399_ROCKPI4B_Android11.mk \
++    $(LOCAL_DIR)/rk3399_ROCK4SE_atv/rk3399_ROCK4SE_atv.mk \
+     $(LOCAL_DIR)/rk3399_ROCKPI4C_Android11/rk3399_ROCKPI4C_Android11.mk \
+     $(LOCAL_DIR)/rk3399_ROCKPI4C_Plus_Android11/rk3399_ROCKPI4C_Plus_Android11.mk \
+     $(LOCAL_DIR)/rk3399_ROCKPIFuhai_Android11/rk3399_ROCKPIFuhai_Android11.mk \
+@@ -35,6 +36,7 @@ COMMON_LUNCH_CHOICES := \
+     rk3399_Android11-userdebug \
+     rk3399_Android11-user \
+     rk3399_ROCKPI4B_Android11-userdebug \
++    rk3399_ROCK4SE_atv-userdebug \
+     rk3399_ROCKPI4B_Android11-user \
+     rk3399_ROCKPI4C_Android11-userdebug \
+     rk3399_ROCKPI4C_Android11-user \

@@ -1,0 +1,12 @@
+diff --git a/dr-g/Android.mk b/dr-g/Android.mk
+index ad00282..8ea41d0 100644
+--- a/dr-g/Android.mk
++++ b/dr-g/Android.mk
+@@ -23,6 +23,7 @@ LOCAL_MODULE_CLASS := EXECUTABLES
+ LOCAL_MODULE_STEM := $(LOCAL_MODULE)
+ LOCAL_MODULE_PATH := $(TARGET_SYSTEM_OUT_BIN)
+ LOCAL_SRC_FILES := dr-g
++LOCAL_CHECK_ELF_FILES := false
+ include $(BUILD_PREBUILT)
+ 
+ 

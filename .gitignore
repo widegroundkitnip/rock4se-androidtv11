@@ -1,0 +1,15 @@
+# Firmware images belong in GitHub Releases
+*.img
+*.img.xz
+*.img.gz
+*.zip
+
+# Android build output
+out/
+
+# Full Android source tree
+source/
+
+# Temporary/backup files
+*.orig
+*.bad
