@@ -161,17 +161,136 @@ Compare the result with the value in:
 SHA256SUMS
 ```
 
-## Applications
+## Applications and sideloading
 
-This build does not include Google Play Store.
+This build does not include Google Play Store. Apps such as Plex, Jellyfin and other Android TV applications can be installed manually using APK files and ADB.
 
-Applications can be installed manually using APK files or ADB.
+ADB is used from another computer; you do not SSH into the Android TV device to install apps.
+
+### 1. Install ADB on Windows
+
+Download **Android SDK Platform-Tools for Windows** from Google:
+
+https://developer.android.com/tools/releases/platform-tools
+
+Extract the ZIP, for example to:
+
+```text
+C:\platform-tools
+```
+
+Open PowerShell in that directory and verify ADB works:
+
+```powershell
+.\adb.exe version
+```
+
+Linux and macOS users can also use Google's Platform-Tools package or their distribution's Android platform-tools package.
+
+### 2. Enable developer options on the ROCK 4 SE
+
+After Android TV has booted, open Settings and locate the Android build information. On Android TV this is typically under:
+
+```text
+Settings -> Device Preferences -> About -> Build
+```
+
+Press **Build** repeatedly until Developer options are enabled.
+
+Then open **Developer options** and enable **USB debugging**. If the build exposes **Wireless debugging** or **Network debugging**, enable that as well for installation over your local network.
+
+Menu names can vary slightly between Android TV builds.
+
+### 3. Connect with ADB
+
+#### Wireless debugging
+
+Keep the Windows PC and ROCK 4 SE on the same local network.
+
+If the device exposes classic network ADB on port 5555, connect with:
+
+```powershell
+.\adb.exe connect ROCK4SE_IP:5555
+```
 
 For example:
 
-```bash
-adb install app.apk
+```powershell
+.\adb.exe connect 192.168.1.123:5555
 ```
+
+If Android displays a debugging authorization prompt on the TV, accept it.
+
+Android 11 may instead show a **Wireless debugging** pairing screen with a pairing code and separate port numbers. In that case use the IP address and ports shown on the TV:
+
+```powershell
+.\adb.exe pair ROCK4SE_IP:PAIRING_PORT
+.\adb.exe connect ROCK4SE_IP:ADB_PORT
+```
+
+Enter the pairing code shown on the TV when requested.
+
+Check the connection:
+
+```powershell
+.\adb.exe devices
+```
+
+The ROCK 4 SE should appear as a connected device.
+
+### 4. Install Plex, Jellyfin or another APK
+
+Download the Android TV version of the application's APK from the project's official source or another source you trust.
+
+Put the APK in your `platform-tools` directory and install it. For example:
+
+```powershell
+.\adb.exe install .\plex.apk
+```
+
+or:
+
+```powershell
+.\adb.exe install .\jellyfin.apk
+```
+
+For any other Android TV APK:
+
+```powershell
+.\adb.exe install .\app.apk
+```
+
+To update an already-installed app while keeping its app data:
+
+```powershell
+.\adb.exe install -r .\app.apk
+```
+
+After installation, the app should appear in the Android TV app list.
+
+### Troubleshooting ADB
+
+Check connected devices:
+
+```powershell
+.\adb.exe devices
+```
+
+Reconnect to a network device:
+
+```powershell
+.\adb.exe disconnect ROCK4SE_IP:5555
+.\adb.exe connect ROCK4SE_IP:5555
+```
+
+Restart the local ADB service if needed:
+
+```powershell
+.\adb.exe kill-server
+.\adb.exe start-server
+```
+
+If ADB reports the device as `unauthorized`, look at the TV and accept the debugging authorization prompt.
 
 The main intended applications include:
 
@@ -272,5 +391,4 @@ The RK3399 contains dedicated hardware video decoding support.
 The build retains the Rockchip Android media stack and is intended to support hardware-accelerated playback, including H.264 and H.265/HEVC.
 
 Actual codec and resolution support will be documented after testing with Plex, Jellyfin and local media files.
-
 
