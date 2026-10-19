@@ -1,45 +1,122 @@
 # ROCK 4 SE Android TV 11
 
-AOSP Android TV 11 for the Radxa ROCK 4 SE / RK3399.
+Community-built AOSP Android TV 11 for the Radxa ROCK 4 SE / RK3399.
 
-This is a community build. It is not affiliated with or certified by Google or Radxa, and it does not include Google Apps.
+This project is not affiliated with or certified by Google or Radxa. Google Apps, Google Play Services and the Play Store are not included.
 
-## Status
+## Current release
 
-The current working baseline uses the normal Rockchip RK3399 `tablet` BSP path and adds the Android TV pieces on top of it.
+**v1.0.3** is the current tested image:
 
-What is working in the current baseline:
+- [Download `rock4se-androidtv11-v1.0.3.img.xz`](https://github.com/widegroundkitnip/rock4se-androidtv11/releases/download/v1.0.3/rock4se-androidtv11-v1.0.3.img.xz)
+- [Release notes](https://github.com/widegroundkitnip/rock4se-androidtv11/releases/tag/v1.0.3)
 
-- Android 11
-- AOSP Android TV base
-- ROCK 4 SE / ROCK 4B kernel and U-Boot configuration
-- HDMI output
-- Rockchip output manager
-- Rockchip hardware video stack
-- TV audio configuration
-
-HDMI-CEC is not working yet. Enabling Android's `android.hardware.hdmi.cec` feature currently makes the board fail during boot and fall back to recovery.
-
-There is no release-quality image from the current development branch yet. Older releases do not represent the current build and should be treated as experimental.
-
-## Why the build uses the tablet BSP path
-
-Rockchip selects different platform paths for `tablet`, `box` and `atv`.
-
-On RK3399, the Rockchip `atv` and `box` paths fail to boot reliably in this tree. The normal `tablet` path does boot, so this project keeps that hardware/BSP path and sets:
+SHA-256:
 
 ```text
-TARGET_BOARD_PLATFORM_PRODUCT=tablet
-PRODUCT_CHARACTERISTICS=tv
+0362b29aa46e8418f5a33453e7f4d64834454b21e52ff2f1831604e278d73afe  rock4se-androidtv11-v1.0.3.img.xz
+86d93386825e40a9113bfd1eda2f4ac01de718797baa71df94e392570af75e10  rock4se-androidtv11-v1.0.3.img
 ```
 
-The AOSP Android TV base and the Rockchip TV components are then added explicitly.
+The uncompressed image is 4,372,579,840 bytes.
 
-This is still Android TV 11. The word `tablet` here refers to the Rockchip BSP path, not the user interface.
+## What works
 
-## Source
+The v1.0.3 image has been booted and tested on a ROCK 4 SE:
 
-The Android source comes from Radxa's Android 11 manifest:
+- Android 11 / API 30
+- AOSP Android TV interface
+- Leanback launcher and Leanback keyboard
+- TV provisioning and TV Settings
+- HDMI output and TV audio configuration
+- HDMI-CEC service and remote-control navigation
+- Rockchip RK3399 hardware video stack
+- Wi-Fi hardware detection
+- Bluetooth enabled and running
+- Stable framework boot with `sys.boot_completed=1`
+
+The build uses the Rockchip ATV product path while retaining the ROCK 4 SE kernel, device tree, U-Boot and hardware support.
+
+## What is not included
+
+- Google Apps, GTVS, Google Play Services or Play Store
+- Phone launcher or phone Setup Wizard
+- Telephony, RIL or APN configuration
+- Touchscreen or fake-touch device declarations
+- Rockchip tablet launcher and bundled tablet apps
+
+Android TV APKs such as Jellyfin or Plex can be sideloaded with ADB:
+
+```bash
+adb install app.apk
+```
+
+To replace an installed APK while preserving its data:
+
+```bash
+adb install -r app.apk
+```
+
+## Verify the download
+
+On Linux:
+
+```bash
+sha256sum rock4se-androidtv11-v1.0.3.img.xz
+```
+
+On macOS:
+
+```bash
+shasum -a 256 rock4se-androidtv11-v1.0.3.img.xz
+```
+
+The expected compressed-file checksum is:
+
+```text
+0362b29aa46e8418f5a33453e7f4d64834454b21e52ff2f1831604e278d73afe
+```
+
+To verify the image content without keeping a second 4.1 GiB file:
+
+```bash
+xz -dc rock4se-androidtv11-v1.0.3.img.xz | sha256sum
+```
+
+Expected uncompressed checksum:
+
+```text
+86d93386825e40a9113bfd1eda2f4ac01de718797baa71df94e392570af75e10
+```
+
+## Flashing
+
+The release asset is an XZ-compressed raw GPT disk image. Balena Etcher can normally open the `.img.xz` file directly. Alternatively, decompress it first:
+
+```bash
+xz -dk rock4se-androidtv11-v1.0.3.img.xz
+```
+
+Then write `rock4se-androidtv11-v1.0.3.img` with Etcher, Rufus, Raspberry Pi Imager or another raw-image writer.
+
+> [!WARNING]
+> Flashing erases the selected drive. Verify that the target is the removable microSD card, not your computer's system disk.
+
+The first boot takes longer than later boots.
+
+## Runtime verification
+
+The tested image reached boot completion in about 62 seconds. `system_server` remained stable beyond the failure interval seen in earlier development images. The sensor HAL and HDMI-CEC HAL both registered successfully.
+
+The active Home activity was the AOSP sample Leanback launcher, and LeanbackIME was the active keyboard. Runtime inspection found no phone, telephony, touchscreen or fake-touch declarations.
+
+### UART caution
+
+Avoid sending interactive UART commands during the first two to three minutes of boot. One early-boot diagnostic attempt triggered a stack overflow in Rockchip's FIQ UART debugger. Passive UART capture and post-boot commands worked normally.
+
+## Source base
+
+The Android source starts from Radxa's Android 11 manifest:
 
 ```bash
 repo init \
@@ -50,7 +127,20 @@ repo init \
 repo sync -d --no-tags -j4
 ```
 
-The hardware base is the ROCK 4B/RK3399 configuration used by the ROCK 4 SE:
+The v1.0.3 image was built with:
+
+```text
+rk3399_ROCK4SE_atvbase_test-userdebug
+```
+
+and the Rockchip ATV product mode:
+
+```text
+TARGET_BOARD_PLATFORM_PRODUCT=atv
+PRODUCT_CHARACTERISTICS=tv
+```
+
+The hardware base remains:
 
 ```text
 PRODUCT_KERNEL_CONFIG := rockchip_defconfig android-11.config rockpi_4b.config
@@ -58,114 +148,27 @@ PRODUCT_KERNEL_DTS := rk3399-rockpi-4b
 PRODUCT_UBOOT_CONFIG := rockpi4b
 ```
 
-## Build target
+Builds should run inside the environment defined by [`docker/Dockerfile`](docker/Dockerfile), because the Rockchip tree contains legacy host tools that can fail on modern Linux distributions.
 
-The public target is:
-
-```text
-rk3399_ROCK4SE_atv
-```
-
-The target name contains `atv`, but `BoardConfig.mk` explicitly forces the Rockchip platform product back to `tablet`. This avoids the broken RK3399 ATV BSP path while keeping a clear target name.
-
-## Apply the project files
-
-Copy:
-
-```text
-device/rockchip/rk3399/rk3399_ROCK4SE_atv/
-```
-
-into the Android source tree at the same path.
-
-Apply:
-
-```text
-patches/device-rockchip-rk3399-AndroidProducts.patch
-patches/external-rktoolbox-dr-g.patch
-patches/hardware-rockchip-audio-force-box-hal.patch
-```
-
-The audio patch adds an explicit `ROCKCHIP_FORCE_BOX_HAL` switch. The product enables that switch without changing `TARGET_BOARD_PLATFORM_PRODUCT` to `box` or `atv`.
-
-## Build environment
-
-Build in the Docker image from `docker/Dockerfile`.
-
-The Android/Rockchip tree contains old host tooling. Building directly on a modern Ubuntu host can fail in U-Boot and other legacy build scripts.
-
-Example:
-
-```bash
-docker build -t rock4-atv11-build docker/
-
-docker run --rm -it \
-  -v /path/to/android/source:/src \
-  -w /src \
-  rock4-atv11-build \
-  bash
-```
-
-Inside the container:
-
-```bash
-source build/envsetup.sh
-lunch rk3399_ROCK4SE_atv-userdebug
-./build.sh -UACKu
-```
-
-A successful GPT build ends with:
-
-```text
-Make gpt image ok!
-```
-
-The raw image is written under:
-
-```text
-rockdev/Image-rk3399_ROCK4SE_atv/gpt.img
-```
-
-## Flashing
-
-The raw GPT image can be written to a microSD card with Balena Etcher, Rufus, `dd`, or another raw-image writer.
-
-Flashing erases the selected card.
-
-The first boot takes longer than later boots.
-
-## Apps
-
-Google Play Store is not included.
-
-Android TV APKs such as Plex and Jellyfin can be installed with ADB. For a connected device:
-
-```bash
-adb install app.apk
-```
-
-To replace an installed APK while keeping its data:
-
-```bash
-adb install -r app.apk
-```
+> [!NOTE]
+> The device files and patches currently stored in this repository describe the older v1.0.0 hybrid baseline. They are retained as historical development material and do **not** yet reproduce the v1.0.3 release image. The downloadable v1.0.3 image and its checksums are authoritative for this release.
 
 ## HDMI-CEC
 
-CEC is disabled in the current baseline.
+v1.0.3 includes:
 
-The main finding so far is simple: the TV build boots until `android.hardware.hdmi.cec.xml` advertises CEC support. Once that feature is advertised, Android starts its CEC framework path and the RK3399 build eventually falls back to recovery.
+- `android.hardware.hdmi.cec.xml`
+- the Rockchip CEC service and implementation
+- a VINTF declaration for `android.hardware.tv.cec@1.0::IHdmiCec/default`
 
-The HIDL service, device-type property, VINTF declaration and Rockchip legacy CEC HAL have all been tested in different combinations. None has fixed the feature-enabled boot failure yet.
-
-See [docs/CEC-DEBUGGING.md](docs/CEC-DEBUGGING.md) for the test history.
+The service registers successfully and CEC remote navigation has been tested. [`docs/CEC-DEBUGGING.md`](docs/CEC-DEBUGGING.md) records the earlier failure investigation and should be read as historical debugging notes.
 
 ## Hardware video decoding
 
-The build keeps the Rockchip media stack used by the RK3399. H.264 and H.265/HEVC hardware decoding are part of the target, but codec and application testing is still ongoing.
+The image retains the Rockchip RK3399 media stack. H.264 and H.265/HEVC hardware decoding support is included, although application-specific codec compatibility can vary.
 
 ## License
 
-The files written for this repository are licensed under Apache-2.0 unless a file says otherwise.
+Files written for this repository are licensed under Apache-2.0 unless a file says otherwise.
 
-Android, Rockchip, Radxa and other upstream code keep their original licenses.
+Android, Rockchip, Radxa and other upstream code retain their original licenses.
