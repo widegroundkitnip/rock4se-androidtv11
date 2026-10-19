@@ -45,17 +45,16 @@ The build uses the Rockchip ATV product path while retaining the ROCK 4 SE kerne
 - Touchscreen or fake-touch device declarations
 - Rockchip tablet launcher and bundled tablet apps
 
-Android TV APKs such as Jellyfin or Plex can be sideloaded with ADB:
+## Install Plex or Jellyfin
+
+This image has no Play Store. Download an Android TV APK on another computer from [Plex](https://forums.plex.tv/t/plex-for-mobile-tvs-android-mobile-ios-android-tv-tvos-fire-tv/909610) or [Jellyfin](https://github.com/jellyfin/jellyfin-androidtv/releases), then sideload it:
 
 ```bash
-adb install app.apk
+adb install -r Plex.apk
+adb install -r Jellyfin.apk
 ```
 
-To replace an installed APK while preserving its data:
-
-```bash
-adb install -r app.apk
-```
+Use a standalone Android TV `arm64-v8a` or universal APK, not an APK bundle.
 
 ## Verify the download
 
