@@ -6,23 +6,28 @@ This project is not affiliated with or certified by Google or Radxa. Google Apps
 
 ## Current release
 
-**v1.0.3** is the current tested image:
+**v1.0.4** is the current tested image:
 
-- [Download `rock4se-androidtv11-v1.0.3.img.xz`](https://github.com/widegroundkitnip/rock4se-androidtv11/releases/download/v1.0.3/rock4se-androidtv11-v1.0.3.img.xz)
-- [Release notes](https://github.com/widegroundkitnip/rock4se-androidtv11/releases/tag/v1.0.3)
+- [Download `rock4se-androidtv11-v1.0.4.img.xz`](https://github.com/widegroundkitnip/rock4se-androidtv11/releases/download/v1.0.4/rock4se-androidtv11-v1.0.4.img.xz)
+- [Release notes](https://github.com/widegroundkitnip/rock4se-androidtv11/releases/tag/v1.0.4)
 
 SHA-256:
 
 ```text
-0362b29aa46e8418f5a33453e7f4d64834454b21e52ff2f1831604e278d73afe  rock4se-androidtv11-v1.0.3.img.xz
-86d93386825e40a9113bfd1eda2f4ac01de718797baa71df94e392570af75e10  rock4se-androidtv11-v1.0.3.img
+9acd0f5fc915164388f1aac5f866bbfbd46a3be230ae6856751a721695accc74  rock4se-androidtv11-v1.0.4.img.xz
+90cd49548c6c8784ae81c6bce811848907ef76c4728aa98c48ec5ccb6aa37590  rock4se-androidtv11-v1.0.4.img
 ```
 
 The uncompressed image is 4,372,579,840 bytes.
 
+## Changes in v1.0.4
+
+- **Fixed display glitch & tearing on idle:** Disabled the phantom internal 720p MIPI-DSI panel (`&dsi`, `simple-panel-dsi`, `&dsi1`) in the device tree that caused dual-display VOP buffer contention.
+- **Configured HDMI as primary native display:** Explicitly configured `vendor.hwc.device.primary=HDMI-A` and `vendor.hwc.compose_policy=6` for clean VOP hardware plane compositing at 1080p@60Hz.
+
 ## What works
 
-The v1.0.3 image has been booted and tested on a ROCK 4 SE:
+The image has been tested on a ROCK 4 SE:
 
 - Android 11 / API 30
 - AOSP Android TV interface
@@ -61,31 +66,31 @@ Use a standalone Android TV `arm64-v8a` or universal APK, not an APK bundle.
 On Linux:
 
 ```bash
-sha256sum rock4se-androidtv11-v1.0.3.img.xz
+sha256sum rock4se-androidtv11-v1.0.4.img.xz
 ```
 
 On macOS:
 
 ```bash
-shasum -a 256 rock4se-androidtv11-v1.0.3.img.xz
+shasum -a 256 rock4se-androidtv11-v1.0.4.img.xz
 ```
 
 The expected compressed-file checksum is:
 
 ```text
-0362b29aa46e8418f5a33453e7f4d64834454b21e52ff2f1831604e278d73afe
+9acd0f5fc915164388f1aac5f866bbfbd46a3be230ae6856751a721695accc74
 ```
 
 To verify the image content without keeping a second 4.1 GiB file:
 
 ```bash
-xz -dc rock4se-androidtv11-v1.0.3.img.xz | sha256sum
+xz -dc rock4se-androidtv11-v1.0.4.img.xz | sha256sum
 ```
 
 Expected uncompressed checksum:
 
 ```text
-86d93386825e40a9113bfd1eda2f4ac01de718797baa71df94e392570af75e10
+90cd49548c6c8784ae81c6bce811848907ef76c4728aa98c48ec5ccb6aa37590
 ```
 
 ## Flashing
@@ -93,10 +98,10 @@ Expected uncompressed checksum:
 The release asset is an XZ-compressed raw GPT disk image. Balena Etcher can normally open the `.img.xz` file directly. Alternatively, decompress it first:
 
 ```bash
-xz -dk rock4se-androidtv11-v1.0.3.img.xz
+xz -dk rock4se-androidtv11-v1.0.4.img.xz
 ```
 
-Then write `rock4se-androidtv11-v1.0.3.img` with Etcher, Rufus, Raspberry Pi Imager or another raw-image writer.
+Then write `rock4se-androidtv11-v1.0.4.img` with Etcher, Rufus, Raspberry Pi Imager or another raw-image writer.
 
 > [!WARNING]
 > Flashing erases the selected drive. Verify that the target is the removable microSD card, not your computer's system disk.
